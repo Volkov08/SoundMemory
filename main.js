@@ -47,7 +47,7 @@ var turn = 0;
 var gameSettings = {
     cards: 40, //even, at most fileNames.length * 2
     players: 1,
-    duration: 5,
+    duration: 1,
     volume: 1,
     maxPlays: 3,
 };
@@ -94,12 +94,8 @@ function startGame() {
     }
 
     document.getElementById("endTurn").onclick = () => {
-        if (cardA != null && cardB != null) {
-            //only end when two cards were uncovered
-
-            if (!playing) endTurn();
-            else endTurnOnStop = true;
-        }
+        if (cardA != null && cardB != null) endTurn();
+        //only end when two cards were uncovered
     };
 
     volumeSlider.oninput();
@@ -111,6 +107,7 @@ function createCard(i) {
     card.onclick = function () {
         clickHandler(i);
     };
+    card.innerText = "?";
     return card;
 }
 
@@ -123,16 +120,18 @@ function createCard(i) {
 //
 
 function endTurn() {
+    pauseAll();
+    endTurnOnStop = false;
+
     cards.forEach((card) => {
         card.classList.remove("uncovered");
+        card.innerText = "?";
     });
     playedInTurn = [];
     cardA = null;
     cardB = null;
     turn++;
     turn %= gameSettings.players;
-
-    endTurnOnStop = false;
 
     console.log(
         `Turn finished, current player:${turn}, score: ${scores[0]}|${scores[1]}`
@@ -155,9 +154,9 @@ function clickHandler(i) {
 
     let j = audioLookup[i];
 
-    if (!audioCollection[j].paused) return true;
-
     if (!audioCollection[j].HAVE_ENOUGH_DATA) return false;
+
+    if (pauseTimeouts[i] != null) return false;
 
     if (!uncoverCard(i)) return false;
 
@@ -178,12 +177,14 @@ function clickHandler(i) {
 //
 
 function pauseAll() {
-    audioCollection.forEach((audio, i) => {
-        pauseCard(i, true);
-        clearTimeout(pauseTimeouts[i]);
-        pauseTimeouts[i] = null;
+    console.log(pauseTimeouts);
+    pauseTimeouts.forEach((k, i) => {
+        if (k != null) {
+            clearTimeout(k);
+            pauseCard(i, true);
+        }
     });
-    playing = false;
+    console.log(pauseTimeouts);
 }
 
 function uncoverCard(i) {
@@ -206,7 +207,7 @@ function uncoverCard(i) {
     } else {
         return false;
     }
-    card.innerText = `${playedInTurn[i]}/ ${gameSettings.maxPlays}`;
+    card.innerText = `${playedInTurn[i]}/${gameSettings.maxPlays}`;
     console.log(cardA, cardB);
     if (cardA != null && cardB != null) {
         if (audioLookup[cardA] == audioLookup[cardB]) matchFound();
@@ -238,11 +239,12 @@ function playCard(i) {
 function pauseCard(i, force = false) {
     let card = cards[i];
 
-    //console.log("stopped", i);
+    console.log("stopped", i);
 
     let j = audioLookup[i];
     audioCollection[j].pause();
     audioCollection[j].currentTime = 0; // rewind to start
+    pauseTimeouts[i] = null;
     card.classList.remove("playing");
 
     playing = false;

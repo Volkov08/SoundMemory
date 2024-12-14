@@ -1,12 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Quicksand:wght@300..700&display=swap");
+
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: rgb(0, 2, 16);
+    background-size: 100%;
+    height: 100vh;
 }
 
 #gameArea {
-    margin: 5px;
     width: auto;
 
     height: 90vh;
@@ -15,11 +17,21 @@ body {
     justify-content: safe left;
     align-content: safe center;
     padding: 5px;
-    --card-margin: 5px;
-
-    background-color: grey;
+    --card-margin: 4px;
 
     --card-size: 5vw;
+}
+
+@keyframes rotatingBorder {
+    0% {
+        color: #00eeff;
+    }
+    50% {
+        color: #fff700;
+    }
+    100% {
+        color: #00eeff;
+    }
 }
 
 .card {
@@ -29,20 +41,59 @@ body {
     background-color: black;
     opacity: 0.5;
     border: 0px;
-    border-radius: 5px;
+    border-radius: 15px 0 15px 0;
+
+    font-family: "Orbitron", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: 500;
+    color: white;
+    font-size: calc(var(--card-size) / 3);
+
+    cursor: pointer;
+
+    transition: all 0.3s;
 }
-.card:hover {
+.card:hover:not(.found) {
     opacity: 1;
+    scale: 1.04;
+    font-size: calc(var(--card-size) / 2.5);
+    transition: all 0.1s;
 }
-.card:active {
-    background-color: blue;
+.card:active:not(.found) {
+    scale: 1.08;
+    transition: all 0.1s;
 }
-.card.uncovered {
-    background-color: orange;
+.card.uncovered:not(.found) {
+    border-style: solid;
+    border-width: 5px;
+
+    border-color: #00eeff;
+    opacity: 1;
+
+    font-size: calc(var(--card-size) / 3.5);
+
+    transition: all 0.1s;
 }
 .card.uncovered.playing {
-    background-color: green;
+    border-color: #fff700;
+    transition: all 0.1s;
 }
+.card.uncovered.playing.found,
 .card.found {
-    background-color: magenta;
+    opacity: 1;
+
+    border-style: solid;
+    border-width: 5px;
+
+    border-color: transparent;
+
+    background: linear-gradient(black, black) padding-box,
+        linear-gradient(90deg, #00eeff, #fff700) border-box;
+
+    transition: all 0.1s;
+}
+
+.card.found:not(.uncovered) {
+    opacity: 0.2;
 }
