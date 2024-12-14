@@ -54,8 +54,8 @@ var scores = [0, 0];
 var turn = 0;
 
 var gameSettings = {
-    cards: 20, //even, at most fileNames.length * 2
-    players: 1,
+    cards: 16, //even, at most fileNames.length * 2
+    players: 2,
     duration: 5,
     volume: 1,
     maxPlays: 3,
@@ -179,8 +179,10 @@ function matchFound() {
     cards[cardA].classList.add("found");
     cards[cardB].classList.add("found");
 
-    cards[cardA].innerText = audioLookup[cardA];
-    cards[cardB].innerText = audioLookup[cardB];
+    scores[turn]++;
+    totalScore = scores[0] + scores[1];
+    cards[cardA].innerText = totalScore;
+    cards[cardB].innerText = totalScore;
 
     solvedPairs[cardA] = true;
     solvedPairs[cardB] = true;
@@ -190,7 +192,11 @@ function matchFound() {
     cardB = null;
     endTurnButton.disabled = true;
 
-    scores[turn]++;
+    document.getElementById("p1Score").style.flexGrow = scores[0];
+    document.getElementById("scoreSpacer").style.flexGrow =
+        gameSettings.cards / 2 - scores[0] - scores[1];
+    document.getElementById("p2Score").style.flexGrow = scores[1];
+
     //endTurnOnStop = true;
 }
 
