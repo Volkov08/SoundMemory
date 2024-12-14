@@ -1,3 +1,4 @@
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var fileNames = null;
 
 async function loadFileNames() {
@@ -27,6 +28,11 @@ volumeSlider.oninput = function () {
     gameSettings.volume = this.value / 100;
     gainNode.gain.value = gameSettings.volume;
 };
+const endTurnButton = document.getElementById("endTurn");
+endTurnButton.onclick = () => {
+    if (cardA != null && cardB != null) endTurn();
+    //only end when two cards were uncovered
+};
 
 var cards = [];
 var audioCollection = [];
@@ -34,20 +40,23 @@ var audioLookup = []; //assigns card to audio
 
 //var tracks = [];
 var pauseTimeouts = [];
+var fadeIntervals = [];
 var playedInTurn = [];
 var cardA = null,
     cardB = null;
-playing = false;
-endTurnOnStop = false;
+var playing = false;
+var endTurnOnStop = false;
+
+var blockInput = true;
 
 var solvedPairs = [];
 var scores = [0, 0];
 var turn = 0;
 
 var gameSettings = {
-    cards: 40, //even, at most fileNames.length * 2
+    cards: 20, //even, at most fileNames.length * 2
     players: 1,
-    duration: 1,
+    duration: 5,
     volume: 1,
     maxPlays: 3,
 };
@@ -60,22 +69,48 @@ var gameSettings = {
 //
 //
 
+resetVars = () => {
+    cards = [];
+    audioCollection = [];
+    audioLookup = []; //assigns card to audio
+
+    //tracks = [];
+    pauseTimeouts = [];
+    fadeIntervals = [];
+    playedInTurn = [];
+    cardA = null;
+    cardB = null;
+    playing = false;
+    endTurnOnStop = false;
+
+    blockInput = true;
+
+    solvedPairs = [];
+    scores = [0, 0];
+    turn = 0;
+};
+
 function startGame() {
     gameSettings.cards = Math.min(gameSettings.cards, fileNames.length * 2);
     alignCards();
+
+    //shuffle fileNames (Fisher-Yates)
+    for (let i = 0; i < fileNames.length; i++) {
+        let j = randInt(fileNames.length);
+        let temp = fileNames[i];
+        fileNames[i] = fileNames[j];
+        fileNames[j] = temp;
+    }
+
     console.log(fileNames);
 
-    let selection = Array.from({ length: gameSettings.cards }, (_, i) => i);
-
     for (let i = 0; i < gameSettings.cards / 2; i++) {
-        let audio = new Audio(`sounds/${fileNames[selection[i]]}`);
+        let audio = new Audio(`sounds/${fileNames[i]}`);
         let track = audioContext.createMediaElementSource(audio);
         track.connect(gainNode);
         audioCollection.push(audio);
         //tracks.push(track);
     }
-
-    audioLookup = [];
     for (let i = 0; i < gameSettings.cards; i++) {
         let card = createCard(i);
 
@@ -85,7 +120,7 @@ function startGame() {
         audioLookup.push(i % (gameSettings.cards / 2));
     }
 
-    //Fisher-Yates shuffle
+    //shuffle cards
     for (let i = 0; i < gameSettings.cards; i++) {
         let j = randInt(gameSettings.cards - i) + i;
         let temp = audioLookup[i];
@@ -93,12 +128,13 @@ function startGame() {
         audioLookup[j] = temp;
     }
 
-    document.getElementById("endTurn").onclick = () => {
-        if (cardA != null && cardB != null) endTurn();
-        //only end when two cards were uncovered
-    };
-
     volumeSlider.oninput();
+    endTurnButton.disabled = true;
+    blockInput = false;
+
+    cards.forEach((card, i) => {
+        card.innerText = "abcdefghijklmnopqrstuvwxyz"[audioLookup[i]];
+    });
 }
 
 function createCard(i) {
@@ -123,13 +159,14 @@ function endTurn() {
     pauseAll();
     endTurnOnStop = false;
 
-    cards.forEach((card) => {
+    cards.forEach((card, i) => {
         card.classList.remove("uncovered");
-        card.innerText = "?";
+        if (!solvedPairs[i]) card.innerText = "?";
     });
     playedInTurn = [];
     cardA = null;
     cardB = null;
+    endTurnButton.disabled = true;
     turn++;
     turn %= gameSettings.players;
 
@@ -142,14 +179,24 @@ function matchFound() {
     cards[cardA].classList.add("found");
     cards[cardB].classList.add("found");
 
+    cards[cardA].innerText = audioLookup[cardA];
+    cards[cardB].innerText = audioLookup[cardB];
+
     solvedPairs[cardA] = true;
     solvedPairs[cardB] = true;
 
+    playedInTurn = [];
+    cardA = null;
+    cardB = null;
+    endTurnButton.disabled = true;
+
     scores[turn]++;
-    endTurnOnStop = true;
+    //endTurnOnStop = true;
 }
 
 function clickHandler(i) {
+    if (blockInput) return false;
+
     if (audioContext.state === "suspended") audioContext.resume();
 
     let j = audioLookup[i];
@@ -182,6 +229,7 @@ function pauseAll() {
         if (k != null) {
             clearTimeout(k);
             pauseCard(i, true);
+            console.log(i);
         }
     });
     console.log(pauseTimeouts);
@@ -216,6 +264,8 @@ function uncoverCard(i) {
             gameSettings.maxPlays
         ) {
             endTurnOnStop = true;
+        } else {
+            endTurnButton.disabled = false;
         }
     }
     return true;
@@ -230,6 +280,12 @@ function playCard(i) {
 
     console.log(`playing ${i}, audio ${j}`);
 
+    audioCollection[j].pause();
+    audioCollection[j].currentTime = 0; // rewind to start
+
+    stopFade(j);
+    audioCollection[j].volume = 1;
+
     audioCollection[j].play();
     card.classList.add("playing");
 
@@ -242,15 +298,35 @@ function pauseCard(i, force = false) {
     console.log("stopped", i);
 
     let j = audioLookup[i];
-    audioCollection[j].pause();
-    audioCollection[j].currentTime = 0; // rewind to start
     pauseTimeouts[i] = null;
+
+    if (isSafari) {
+        //fade is janky on safari
+        audioCollection[j].pause();
+    } else {
+        fadeOutAudio(j);
+    }
     card.classList.remove("playing");
 
     playing = false;
 
     //only end turn if playback finished, not if stopped by starting new playback
     if (endTurnOnStop && !force) endTurn();
+}
+
+function fadeOutAudio(j) {
+    stopFade(j);
+    fadeIntervals[j] = setInterval(() => {
+        if (audioCollection[j].volume > 0.1) {
+            audioCollection[j].volume -= 0.1;
+        } else {
+            stopFade(j);
+        }
+    }, 30);
+}
+function stopFade(j) {
+    clearInterval(fadeIntervals[j]);
+    fadeIntervals[j] = null;
 }
 
 //
@@ -304,6 +380,28 @@ const closestIntegerRatio = (r, n) => {
 
 const randInt = (n) => Math.floor(Math.random() * n);
 
+//
+//
+// ---------------------
+//  game settings
+// ---------------------
+//
+//
+
+const settingsScreen = document.getElementById("settings");
+
+const toggleSettings = () => {
+    if (settingsScreen.classList.contains("hidden")) {
+        settingsScreen.classList.remove("hidden");
+    } else {
+        settingsScreen.classList.add("hidden");
+    }
+};
+
+const buttons = document.getElementsByClassName("settingsButton");
+for (let button of buttons) {
+    button.onclick = toggleSettings;
+}
 //
 //
 // ---------------------

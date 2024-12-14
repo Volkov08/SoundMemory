@@ -8,9 +8,28 @@
     </head>
     <body>
         <div id="gameArea"></div>
-        <input type="range" id="volume" min="0" max="100" value="50" />
-        <button id="endTurn">end Turn</button>
+        <div id="lowerBar">
+            <p id="p1ScoreLabel">Player 1</p>
+            <div id="score">
+                <div id="p1Score"></div>
+                <div id="p2Score"></div>
+            </div>
+            <p id="p2ScoreLabel">Player 2</p>
+
+            <div class="break"></div>
+
+            <p id="volumeLabel">Volume</p>
+            <input type="range" id="volume" min="0" max="100" value="50" />
+            <button id="endTurn" disabled>End Turn</button>
+            <button class="settingsButton">Settings</button>
+        </div>
+
+        <div id="settings" class="hidden">
+            asdasd
+
+            <button class="settingsButton">Close</button>
+        </div>
+
         <script src="main.js"></script>
-        <button class="card found uncovered">?</button>
     </body>
 </html>
