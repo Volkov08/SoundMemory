@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+#gameArea {
+    margin: 5px;
+    width: auto;
+
+    height: 90vh;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: safe left;
+    align-content: safe center;
+    padding: 5px;
+    --card-margin: 5px;
+
+    background-color: grey;
+
+    --card-size: 5vw;
+}
+
+.card {
+    width: var(--card-size);
+    height: var(--card-size);
+    margin: var(--card-margin);
+    background-color: black;
+    opacity: 0.5;
+    border: 0px;
+    border-radius: 5px;
+}
+.card:hover {
+    opacity: 1;
+}
+.card:active {
+    background-color: blue;
+}
+.card.uncovered {
+    background-color: orange;
+}
+.card.uncovered.playing {
+    background-color: green;
+}
+.card.found {
+    background-color: magenta;
+}
