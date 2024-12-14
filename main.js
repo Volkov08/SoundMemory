@@ -49,7 +49,7 @@ var gameSettings = {
     players: 1,
     duration: 5,
     volume: 1,
-    maxPlays: 1,
+    maxPlays: 3,
 };
 
 //
