@@ -8,27 +8,64 @@
     </head>
     <body>
         <div id="gameArea"></div>
-        <div id="lowerBar" class="asinglePlayer">
+        <div id="lowerBar" class="turn1">
             <p id="p1ScoreLabel">Player 1</p>
+            <p id="p1ScoreValue">0</p>
             <div id="score">
                 <div id="p1Score"></div>
                 <div id="scoreSpacer"></div>
                 <div id="p2Score"></div>
             </div>
+            <p id="p2ScoreValue">0</p>
             <p id="p2ScoreLabel">Player 2</p>
+            <p id="turnLabel">Turn</p>
+            <p id="turnValue">0</p>
             <div id="flexSpacer"></div>
 
             <div class="break"></div>
 
             <p id="volumeLabel">Volume</p>
-            <input type="range" id="volume" min="0" max="100" value="50" />
+            <input
+                type="range"
+                id="volume"
+                min="0"
+                max="100"
+                value="50"
+                class="slider"
+            />
             <button id="endTurn" disabled>End Turn</button>
-            <button class="settingsButton">Settings</button>
+            <button class="settingsButton">New Game</button>
         </div>
 
         <div id="settings" class="hidden">
-            asdasd
+            <h1>Start New Game</h1>
+            <div class="break"></div>
 
+            <button id="setSingleplayer">Singleplayer</button>
+            <div class="break"></div>
+
+            <p>Sound Clip Duration</p>
+            <button id="setSoundDuration">0.5s</button>
+            <div class="break"></div>
+
+            <p>Allowed Plays</p>
+            <button id="setMaxPlays">3</button>
+            <div class="break"></div>
+
+            <p>Number of Pairs</p>
+            <input
+                type="range"
+                id="setPairs"
+                class="slider"
+                min="4"
+                max="30"
+                value="10"
+            />
+            <p id="setPairsValue"">10</p>
+
+            <div class="bigBreak"></div>
+
+            <button id="startNewGame">Start</button>
             <button class="settingsButton">Close</button>
         </div>
 

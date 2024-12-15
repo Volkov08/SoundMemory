@@ -23,16 +23,13 @@ audioContext.suspend();
 const gainNode = audioContext.createGain();
 gainNode.connect(audioContext.destination);
 
-const volumeSlider = document.getElementById("volume");
-volumeSlider.oninput = function () {
-    gameSettings.volume = this.value / 100;
-    gainNode.gain.value = gameSettings.volume;
-};
 const endTurnButton = document.getElementById("endTurn");
 endTurnButton.onclick = () => {
     if (cardA != null && cardB != null) endTurn();
     //only end when two cards were uncovered
 };
+const lowerBar = document.getElementById("lowerBar");
+const startButton = document.getElementById("startNewGame");
 
 var cards = [];
 var audioCollection = [];
@@ -52,14 +49,98 @@ var blockInput = true;
 var solvedPairs = [];
 var scores = [0, 0];
 var turn = 0;
+var turnAmount = 0;
 
 var gameSettings = {
     cards: 16, //even, at most fileNames.length * 2
     players: 2,
     duration: 5,
     volume: 1,
-    maxPlays: 3,
+    maxPlays: 0,
 };
+
+//
+//
+// ---------------------
+//  settings logic
+// ---------------------
+//
+//
+
+const sliderUpdate = (s) => {
+    s.style.setProperty("--sliderValue", (s.value - s.min) / (s.max - s.min));
+};
+
+var newGameSettings = { ...gameSettings };
+
+startButton.onclick = () => {
+    gameSettings = { ...newGameSettings };
+    audioCollection.forEach((audio) => {
+        audio.pause();
+    });
+    resetVars();
+    writeScore();
+    document.getElementById("turnValue").innerText = turnAmount;
+    startGame();
+    toggleSettings();
+};
+
+const validDuration = [0.5, 1, 3, 5];
+
+const volumeSlider = document.getElementById("volume");
+const setSinglePlayerBut = document.getElementById("setSingleplayer");
+const setSoundDurationBut = document.getElementById("setSoundDuration");
+const setMaxPlaysBut = document.getElementById("setMaxPlays");
+const setPairsSlider = document.getElementById("setPairs");
+
+volumeSlider.oninput = function () {
+    sliderUpdate(this);
+    gameSettings.volume = this.value / 100;
+    gainNode.gain.value = gameSettings.volume;
+};
+
+setPairsSlider.oninput = function () {
+    sliderUpdate(this);
+    newGameSettings.cards = this.value * 2;
+    document.getElementById("setPairsValue").innerText = this.value;
+};
+
+const setSinglePlayerButText = () => {
+    setSinglePlayerBut.innerText =
+        newGameSettings.players == 1 ? "Singleplayer" : "Multiplayer";
+};
+setSinglePlayerBut.onclick = function () {
+    if (newGameSettings.players == 1) newGameSettings.players = 2;
+    else newGameSettings.players = 1;
+    setSinglePlayerButText();
+};
+const setSoundDurationButText = () => {
+    setSoundDurationBut.innerText = `${newGameSettings.duration}s`;
+};
+setSoundDurationBut.onclick = function () {
+    newGameSettings.duration =
+        validDuration[
+            (validDuration.indexOf(newGameSettings.duration) + 1) %
+                validDuration.length
+        ];
+    setSoundDurationButText();
+};
+const setMaxPlaysButText = () => {
+    if (newGameSettings.maxPlays == 0) setMaxPlaysBut.innerText = "Unlimited";
+    else setMaxPlaysBut.innerText = `${newGameSettings.maxPlays}`;
+};
+setMaxPlaysBut.onclick = function () {
+    newGameSettings.maxPlays = (newGameSettings.maxPlays + 1) % 4;
+    setMaxPlaysButText();
+};
+
+setMaxPlaysButText();
+setSoundDurationButText();
+setSinglePlayerButText();
+setPairsSlider.value = gameSettings.cards / 2;
+
+volumeSlider.oninput();
+setPairsSlider.oninput();
 
 //
 //
@@ -88,6 +169,14 @@ resetVars = () => {
     solvedPairs = [];
     scores = [0, 0];
     turn = 0;
+    turnAmount = 0;
+
+    lowerBar.classList.remove("turn2");
+    lowerBar.classList.add("turn1");
+
+    lowerBar.classList.toggle("singleplayer", gameSettings.players == 1);
+
+    gameArea.innerHTML = "";
 };
 
 function startGame() {
@@ -128,13 +217,13 @@ function startGame() {
         audioLookup[j] = temp;
     }
 
-    volumeSlider.oninput();
     endTurnButton.disabled = true;
     blockInput = false;
-
+    /*
     cards.forEach((card, i) => {
-        card.innerText = "abcdefghijklmnopqrstuvwxyz"[audioLookup[i]];
+        card.innerText = "abcdefghijklmnopqrstuvwxyz+-.*#/&"[audioLookup[i]];
     });
+    */
 }
 
 function createCard(i) {
@@ -167,12 +256,29 @@ function endTurn() {
     cardA = null;
     cardB = null;
     endTurnButton.disabled = true;
-    turn++;
-    turn %= gameSettings.players;
+
+    if (gameSettings.players == 2) {
+        turn++;
+        turn %= 2;
+        lowerBar.classList.toggle("turn1");
+        lowerBar.classList.toggle("turn2");
+    }
+    turnAmount++;
+    document.getElementById("turnValue").innerText = turnAmount;
 
     console.log(
         `Turn finished, current player:${turn}, score: ${scores[0]}|${scores[1]}`
     );
+}
+
+function writeScore() {
+    document.getElementById("p1Score").style.flexGrow = scores[0];
+    document.getElementById("scoreSpacer").style.flexGrow =
+        gameSettings.cards / 2 - scores[0] - scores[1];
+    document.getElementById("p2Score").style.flexGrow = scores[1];
+
+    document.getElementById("p1ScoreValue").innerText = scores[0];
+    document.getElementById("p2ScoreValue").innerText = scores[1];
 }
 
 function matchFound() {
@@ -192,11 +298,7 @@ function matchFound() {
     cardB = null;
     endTurnButton.disabled = true;
 
-    document.getElementById("p1Score").style.flexGrow = scores[0];
-    document.getElementById("scoreSpacer").style.flexGrow =
-        gameSettings.cards / 2 - scores[0] - scores[1];
-    document.getElementById("p2Score").style.flexGrow = scores[1];
-
+    writeScore();
     //endTurnOnStop = true;
 }
 
@@ -233,8 +335,8 @@ function pauseAll() {
     console.log(pauseTimeouts);
     pauseTimeouts.forEach((k, i) => {
         if (k != null) {
-            clearTimeout(k);
             pauseCard(i, true);
+            clearTimeout(k);
             console.log(i);
         }
     });
@@ -256,22 +358,30 @@ function uncoverCard(i) {
         else if (cardA != i) cardB = i;
 
         card.classList.add("uncovered");
-    } else if (playedInTurn[i] < gameSettings.maxPlays) {
+    } else if (
+        !gameSettings.maxPlays ||
+        playedInTurn[i] < gameSettings.maxPlays
+    ) {
         playedInTurn[i]++;
     } else {
         return false;
     }
-    card.innerText = `${playedInTurn[i]}/${gameSettings.maxPlays}`;
+    if (gameSettings.maxPlays)
+        card.innerText = `${playedInTurn[i]}/${gameSettings.maxPlays}`;
+    else card.innerText = "!";
+
     console.log(cardA, cardB);
     if (cardA != null && cardB != null) {
         if (audioLookup[cardA] == audioLookup[cardB]) matchFound();
-        else if (
-            Math.min(playedInTurn[cardA], playedInTurn[cardB]) ==
-            gameSettings.maxPlays
-        ) {
-            endTurnOnStop = true;
-        } else {
+        else {
             endTurnButton.disabled = false;
+            if (
+                gameSettings.maxPlays &&
+                Math.min(playedInTurn[cardA], playedInTurn[cardB]) ==
+                    gameSettings.maxPlays
+            ) {
+                endTurnOnStop = true;
+            }
         }
     }
     return true;
@@ -328,7 +438,7 @@ function fadeOutAudio(j) {
         } else {
             stopFade(j);
         }
-    }, 30);
+    }, 20);
 }
 function stopFade(j) {
     clearInterval(fadeIntervals[j]);

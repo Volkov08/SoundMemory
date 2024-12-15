@@ -28,7 +28,7 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: 9999;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.9);
     width: 100%;
 
     display: flex;
@@ -36,6 +36,15 @@ body {
 
     justify-content: center;
     align-content: center;
+
+    row-gap: 5px;
+    column-gap: 20px;
+}
+#settings p {
+    align-content: center;
+}
+#settings h1 {
+    margin-bottom: 5vh;
 }
 
 #settings.hidden {
@@ -47,7 +56,7 @@ p {
     font-weight: 500;
     margin: 0;
 }
-button {
+button:not(.card) {
     color: white;
     font-weight: 500;
     font-size: 1.2em;
@@ -63,12 +72,12 @@ button {
     border-radius: 3px 0 3px 0;
     align-content: center;
 }
-
-button:hover:not(:disabled) {
+button:not(.card):hover:not(:disabled) {
     border-color: #00eeff;
 }
 button:disabled {
-    opacity: 0.5;
+    opacity: 0.2;
+    cursor: default;
 }
 
 #lowerBar {
@@ -93,10 +102,16 @@ button:disabled {
 }
 #volume {
     flex-grow: 1;
+    width: 100px;
 }
 .break {
     flex-basis: 100%;
     height: 0;
+}
+
+.bigBreak {
+    flex-basis: 100%;
+    height: 8vh;
 }
 #score {
     font-size: 1.1em;
@@ -106,6 +121,7 @@ button:disabled {
     flex-flow: row wrap;
     justify-content: center;
     align-content: center;
+    align-self: center;
 
     flex-grow: 1;
 
@@ -115,18 +131,27 @@ button:disabled {
     margin: 0;
 
     position: relative;
-    background: linear-gradient(#fff, #fff) no-repeat center/2px 1.2em;
+    background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
 }
-.singlePlayer #score {
-    background: linear-gradient(#fff, #fff) no-repeat right/2px 1.2em;
+.singleplayer #score {
+    background: linear-gradient(#fff, #fff) no-repeat right/2px 1.6rem;
+}
+
+#lowerBar.turn1 #p2Score,
+#lowerBar.turn2 #p1Score,
+#lowerBar.turn1 #p2ScoreLabel,
+#lowerBar.turn2 #p1ScoreLabel,
+#lowerBar.turn1 #p2ScoreValue,
+#lowerBar.turn2 #p1ScoreValue {
+    opacity: 0.2;
 }
 
 #scoreSpacer,
 #p1Score,
 #p2Score {
-    flex-grow: 1;
+    flex-grow: 0;
     text-align: right;
-    height: 0.4em;
+    height: 0.5rem;
     transition: flex-grow 1s;
 }
 #scoreSpacer {
@@ -135,18 +160,82 @@ button:disabled {
 }
 #p1Score {
     background-color: #00eeff;
-    flex-grow: 0;
 }
 #p2Score {
     background-color: #fff700;
-    flex-grow: 0;
 }
+#turnValue,
+#p1ScoreValue,
+#p2ScoreValue {
+    font-size: 1.5em;
+    font-weight: 500;
+    margin: 0;
+    align-content: center;
+    text-align: center;
+}
+@media only screen and (min-width: 600px) {
+    #turnValue,
+    #p1ScoreValue,
+    #p2ScoreValue {
+        min-width: 1.75em;
+    }
+}
+#p1ScoreValue {
+    color: #00eeff;
+    padding-left: 5px;
+}
+#p2ScoreValue {
+    color: #fff700;
+    padding-right: 5px;
+}
+
 #lowerBar #flexSpacer {
     margin-left: -10px;
     width: 6px;
 }
-#lowerBar.singlePlayer #p2ScoreLabel {
+#lowerBar.singleplayer #p1ScoreLabel,
+#lowerBar.singleplayer #p2ScoreValue,
+#lowerBar.singleplayer #p2ScoreLabel {
     display: none;
+}
+#lowerBar:not(.singleplayer) #turnValue,
+#lowerBar:not(.singleplayer) #turnLabel {
+    display: none;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 0.5rem;
+    --sliderValue: 0.5;
+    background: linear-gradient(
+                90deg,
+                #00eeff,
+                #fff700 calc(100% / var(--sliderValue))
+            )
+            no-repeat,
+        linear-gradient(90deg, #fff, #fff) no-repeat;
+    background-position: 0.8rem, 0.8rem;
+    background-size: calc(var(--sliderValue) * (100% - 1.6rem)) 100%,
+        calc(100% - 1.6rem) 2px;
+    margin: 0 -0.8rem 0 -0.8rem;
+    outline: none;
+    align-content: center;
+    align-self: center;
+}
+
+.slider::-webkit-slider-thumb,
+.slider::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.6rem;
+    height: 1.6rem;
+    cursor: pointer;
+    background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
 }
 #gameArea {
     width: auto;
@@ -161,18 +250,6 @@ button:disabled {
     --card-margin: 4px;
 
     --card-size: 5vw;
-}
-
-@keyframes rotatingBorder {
-    0% {
-        color: #00eeff;
-    }
-    50% {
-        color: #fff700;
-    }
-    100% {
-        color: #00eeff;
-    }
 }
 
 .card {
@@ -198,7 +275,8 @@ button:disabled {
     opacity: 1;
     scale: 1.04;
     font-size: calc(var(--card-size) / 2.5);
-    transition: all 0.1s;
+    border-color: #00eeff;
+    /*transition: all 0.1s;*/
 }
 .card:active:not(.found) {
     scale: 1.08;
@@ -236,4 +314,5 @@ button:disabled {
 
 .card.found:not(.uncovered) {
     opacity: 0.2;
+    cursor: default;
 }
