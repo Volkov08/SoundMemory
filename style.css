@@ -27,8 +27,8 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 9999;
-    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 999;
+    background-color: rgba(0, 2, 16, 0.9);
     width: 100%;
 
     display: flex;
@@ -40,9 +40,11 @@ body {
     row-gap: 5px;
     column-gap: 20px;
 }
+
 #settings p {
     align-content: center;
 }
+
 #settings h1 {
     margin-bottom: 5vh;
 }
@@ -71,13 +73,17 @@ button:not(.card) {
     border: 2px solid transparent;
     border-radius: 3px 0 3px 0;
     align-content: center;
+
+    transition: opacity 0.2s;
 }
 button:not(.card):hover:not(:disabled) {
     border-color: #00eeff;
 }
 button:disabled {
-    opacity: 0.2;
+    opacity: 0.1;
     cursor: default;
+
+    transition: opacity 0.2s;
 }
 
 #lowerBar {
@@ -133,7 +139,7 @@ button:disabled {
     position: relative;
     background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
 }
-.singleplayer #score {
+body.singleplayer #score {
     background: linear-gradient(#fff, #fff) no-repeat right/2px 1.6rem;
 }
 
@@ -143,7 +149,7 @@ button:disabled {
 #lowerBar.turn2 #p1ScoreLabel,
 #lowerBar.turn1 #p2ScoreValue,
 #lowerBar.turn2 #p1ScoreValue {
-    opacity: 0.2;
+    opacity: 0.1;
 }
 
 #scoreSpacer,
@@ -193,13 +199,13 @@ button:disabled {
     margin-left: -10px;
     width: 6px;
 }
-#lowerBar.singleplayer #p1ScoreLabel,
-#lowerBar.singleplayer #p2ScoreValue,
-#lowerBar.singleplayer #p2ScoreLabel {
+body.singleplayer #p1ScoreLabel,
+body.singleplayer #p2ScoreValue,
+body.singleplayer #p2ScoreLabel {
     display: none;
 }
-#lowerBar:not(.singleplayer) #turnValue,
-#lowerBar:not(.singleplayer) #turnLabel {
+body:not(.singleplayer) #turnValue,
+body:not(.singleplayer) #turnLabel {
     display: none;
 }
 
@@ -224,23 +230,40 @@ button:disabled {
     align-self: center;
 }
 
-.slider::-webkit-slider-thumb,
 .slider::-moz-range-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 1.6rem;
     height: 1.6rem;
     cursor: pointer;
+    background-color: #fff;
     background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
     border: none;
     border-radius: 0;
     padding: 0;
     margin: 0;
 }
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.6rem;
+    height: 1.6rem;
+    cursor: pointer;
+    background-color: #fff;
+    background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+
 #gameArea {
     width: auto;
 
-    height: 85vh;
+    min-height: 50vh;
+    --max-height: 0.85;
+    height: calc(var(--maxheight) * 100vh);
     display: flex;
     flex-flow: row wrap;
     justify-content: safe left;
@@ -304,6 +327,8 @@ button:disabled {
     border-style: solid;
     border-width: 2px;
 
+    font-size: calc(var(--card-size) / 3);
+
     border-color: transparent;
 
     background: linear-gradient(black, black) padding-box,
@@ -313,6 +338,6 @@ button:disabled {
 }
 
 .card.found:not(.uncovered) {
-    opacity: 0.2;
+    opacity: 0.1;
     cursor: default;
 }

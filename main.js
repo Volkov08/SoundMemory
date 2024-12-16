@@ -11,7 +11,7 @@ async function loadFileNames() {
         const data = await response.json();
         fileNames = data;
 
-        startGame();
+        filesLoaded();
     } catch (error) {
         console.error(error);
     }
@@ -52,7 +52,7 @@ var turn = 0;
 var turnAmount = 0;
 
 var gameSettings = {
-    cards: 16, //even, at most fileNames.length * 2
+    cards: 12, //even, at most fileNames.length * 2
     players: 2,
     duration: 5,
     volume: 1,
@@ -73,19 +73,25 @@ const sliderUpdate = (s) => {
 
 var newGameSettings = { ...gameSettings };
 
-startButton.onclick = () => {
-    gameSettings = { ...newGameSettings };
-    audioCollection.forEach((audio) => {
-        audio.pause();
-    });
-    resetVars();
-    writeScore();
-    document.getElementById("turnValue").innerText = turnAmount;
-    startGame();
-    toggleSettings();
+const validDuration = [0.5, 1, 3, 5];
+
+const openSettingsButton = document.getElementById("openSettings");
+const closeSettingsButton = document.getElementById("closeSettings");
+const settingsScreen = document.getElementById("settings");
+
+openSettingsButton.disabled = true;
+closeSettingsButton.disabled = true;
+
+const closeSettings = () => {
+    settingsScreen.classList.add("hidden");
+};
+const openSettings = () => {
+    settingsScreen.classList.remove("hidden");
 };
 
-const validDuration = [0.5, 1, 3, 5];
+openSettingsButton.onclick = openSettings;
+closeSettingsButton.onclick = closeSettings;
+startButton.onclick = startGame;
 
 const volumeSlider = document.getElementById("volume");
 const setSinglePlayerBut = document.getElementById("setSingleplayer");
@@ -174,15 +180,34 @@ resetVars = () => {
     lowerBar.classList.remove("turn2");
     lowerBar.classList.add("turn1");
 
-    lowerBar.classList.toggle("singleplayer", gameSettings.players == 1);
+    document.body.classList.toggle("singleplayer", gameSettings.players == 1);
 
     gameArea.innerHTML = "";
 };
 
-function startGame() {
-    gameSettings.cards = Math.min(gameSettings.cards, fileNames.length * 2);
-    alignCards();
+function filesLoaded() {
+    console.log("files loaded");
 
+    gameSettings.cards = Math.min(gameSettings.cards, fileNames.length * 2);
+    setPairsSlider.max = fileNames.length;
+    setPairsSlider.oninput();
+}
+
+function startGame() {
+    gameSettings = { ...newGameSettings };
+    audioCollection.forEach((audio) => {
+        audio.pause();
+    });
+    resetVars();
+    writeScore();
+
+    closeSettings();
+
+    openSettingsButton.disabled = false;
+    closeSettingsButton.disabled = false;
+    closeSettingsButton.style.display = "block";
+
+    alignCards();
     //shuffle fileNames (Fisher-Yates)
     for (let i = 0; i < fileNames.length; i++) {
         let j = randInt(fileNames.length);
@@ -219,11 +244,12 @@ function startGame() {
 
     endTurnButton.disabled = true;
     blockInput = false;
-    /*
     cards.forEach((card, i) => {
-        card.innerText = "abcdefghijklmnopqrstuvwxyz+-.*#/&"[audioLookup[i]];
+        card.innerText =
+            "abcdefghijklmnopqrstuvwxyz+-.*#/&ß%йцукенгшщзхфывапролджэячсмитьбю"[
+                audioLookup[i]
+            ];
     });
-    */
 }
 
 function createCard(i) {
@@ -257,6 +283,10 @@ function endTurn() {
     cardB = null;
     endTurnButton.disabled = true;
 
+    if (allFound()) {
+        finishGame();
+        return;
+    }
     if (gameSettings.players == 2) {
         turn++;
         turn %= 2;
@@ -264,7 +294,7 @@ function endTurn() {
         lowerBar.classList.toggle("turn2");
     }
     turnAmount++;
-    document.getElementById("turnValue").innerText = turnAmount;
+    writeScore();
 
     console.log(
         `Turn finished, current player:${turn}, score: ${scores[0]}|${scores[1]}`
@@ -299,7 +329,11 @@ function matchFound() {
     endTurnButton.disabled = true;
 
     writeScore();
-    //endTurnOnStop = true;
+
+    if (allFound()) {
+        endTurnButton.disabled = false;
+        endTurnOnStop = true;
+    }
 }
 
 function clickHandler(i) {
@@ -326,21 +360,38 @@ function clickHandler(i) {
 //
 //
 // ---------------------
+//  game end
+// ---------------------
+//
+//
+const allFound = () => {
+    return scores[0] + scores[1] == gameSettings.cards / 2;
+};
+
+const gameFinishedScreen = document.getElementById("gameFinished");
+
+function finishGame() {
+    lowerBar.classList.remove("turn1");
+    lowerBar.classList.remove("turn2");
+
+    alert(1);
+}
+
+//
+//
+// ---------------------
 //  card utilities
 // ---------------------
 //
 //
 
 function pauseAll() {
-    console.log(pauseTimeouts);
     pauseTimeouts.forEach((k, i) => {
         if (k != null) {
             pauseCard(i, true);
             clearTimeout(k);
-            console.log(i);
         }
     });
-    console.log(pauseTimeouts);
 }
 
 function uncoverCard(i) {
@@ -370,7 +421,7 @@ function uncoverCard(i) {
         card.innerText = `${playedInTurn[i]}/${gameSettings.maxPlays}`;
     else card.innerText = "!";
 
-    console.log(cardA, cardB);
+    console.log("selected:", cardA, cardB);
     if (cardA != null && cardB != null) {
         if (audioLookup[cardA] == audioLookup[cardB]) matchFound();
         else {
@@ -454,10 +505,12 @@ function stopFade(j) {
 //
 
 function alignCards() {
-    let gAHeight = gameArea.clientHeight;
-    let gAWidth = gameArea.clientWidth;
-
     let compStyle = getComputedStyle(gameArea);
+
+    let gAHeight =
+        compStyle.getPropertyValue("--max-height") * window.innerHeight;
+    console.log(gAHeight);
+    let gAWidth = gameArea.clientWidth;
 
     paddig = parseInt(compStyle.padding);
     margin = parseInt(compStyle.getPropertyValue("--card-margin"));
@@ -479,8 +532,8 @@ function alignCards() {
 }
 
 const closestIntegerRatio = (r, n) => {
-    let a = 0;
-    let b = 0;
+    let a = 1;
+    let b = r;
     let flip = false;
     if (r > 1) {
         r = 1 / r;
@@ -499,28 +552,6 @@ const randInt = (n) => Math.floor(Math.random() * n);
 //
 //
 // ---------------------
-//  game settings
-// ---------------------
-//
-//
-
-const settingsScreen = document.getElementById("settings");
-
-const toggleSettings = () => {
-    if (settingsScreen.classList.contains("hidden")) {
-        settingsScreen.classList.remove("hidden");
-    } else {
-        settingsScreen.classList.add("hidden");
-    }
-};
-
-const buttons = document.getElementsByClassName("settingsButton");
-for (let button of buttons) {
-    button.onclick = toggleSettings;
-}
-//
-//
-// ---------------------
 //  start game
 // ---------------------
 //
@@ -528,3 +559,5 @@ for (let button of buttons) {
 
 window.onresize = alignCards;
 loadFileNames();
+
+//document.body.classList.add("singleplayer");

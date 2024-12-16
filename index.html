@@ -7,7 +7,13 @@
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <div id="gameArea"></div>
+        <div id="gameArea">
+            <div id ="gameFinished">
+                <h1>Game Finished!</h1>
+                <p>thanks for playing</p>
+            </div>
+            </div id="cardsArea">
+        </div>
         <div id="lowerBar" class="turn1">
             <p id="p1ScoreLabel">Player 1</p>
             <p id="p1ScoreValue">0</p>
@@ -34,10 +40,10 @@
                 class="slider"
             />
             <button id="endTurn" disabled>End Turn</button>
-            <button class="settingsButton">New Game</button>
+            <button id="openSettings" disabled>New Game</button>
         </div>
 
-        <div id="settings" class="hidden">
+        <div id="settings">
             <h1>Start New Game</h1>
             <div class="break"></div>
 
@@ -45,11 +51,11 @@
             <div class="break"></div>
 
             <p>Sound Clip Duration</p>
-            <button id="setSoundDuration">0.5s</button>
+            <button id="setSoundDuration"></button>
             <div class="break"></div>
 
             <p>Allowed Plays</p>
-            <button id="setMaxPlays">3</button>
+            <button id="setMaxPlays"></button>
             <div class="break"></div>
 
             <p>Number of Pairs</p>
@@ -59,14 +65,14 @@
                 class="slider"
                 min="4"
                 max="30"
-                value="10"
+                value="6"
             />
-            <p id="setPairsValue"">10</p>
+            <p id="setPairsValue""></p>
 
             <div class="bigBreak"></div>
 
             <button id="startNewGame">Start</button>
-            <button class="settingsButton">Close</button>
+            <button id ="closeSettings" disabled style="display: none;">Close</button>
         </div>
 
         <script src="main.js"></script>
