@@ -315,6 +315,7 @@ function writeScore() {
 
     document.getElementById("p1ScoreValue").innerText = scores[0];
     document.getElementById("p2ScoreValue").innerText = scores[1];
+    document.getElementById("turnValue").innerText = turnAmount;
 }
 
 function matchFound() {
