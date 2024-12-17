@@ -53,8 +53,8 @@ var turn = 0;
 var turnAmount = 0;
 
 var gameSettings = {
-    cards: 12, //even, at most fileNames.length * 2
-    players: 2,
+    cards: 16, //even, at most fileNames.length * 2
+    players: 1,
     duration: 5,
     volume: 1,
     maxPlays: 0,
