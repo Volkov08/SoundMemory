@@ -1,5 +1,5 @@
 # Sound Memory
-[live page](https://volkov08.github.io/SoundMemory/)
+[Live Page](https://volkov08.github.io/SoundMemory/)
 
 A game of Memory, but with sound clips!
 
