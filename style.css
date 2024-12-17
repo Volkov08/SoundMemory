@@ -1,12 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Quicksand:wght@300..700&display=swap");
 
+:root {
+    --bg-color: rgb(0, 2, 16);
+    --fg-color: white;
+    --acc-color1: #00eeff;
+    --acc-color2: #fff700;
+}
+
 body {
     margin: 0;
     padding: 0;
-    background-color: rgb(0, 2, 16);
+    background-color: var(--bg-color);
     background-size: 100%;
     height: 100vh;
-    color: white;
+    color: var(--fg-color);
 
     font-optical-sizing: auto;
     font-style: normal;
@@ -28,7 +35,7 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: 999;
-    background-color: rgba(0, 2, 16, 0.9);
+    background-color: color-mix(in srgb, var(--bg-color) 90%, transparent);
     width: 100%;
 
     display: flex;
@@ -60,8 +67,13 @@ p {
     font-weight: 500;
     margin: 0;
 }
+a {
+    text-decoration: none;
+}
+
+a,
 button:not(.card) {
-    color: white;
+    color: var(--fg-color);
     font-weight: 500;
     font-size: 1.2em;
     text-align: center;
@@ -77,9 +89,11 @@ button:not(.card) {
     align-content: center;
 
     transition: opacity 0.2s;
+    padding: 2px 4px;
 }
+a:hover,
 button:not(.card):hover:not(:disabled) {
-    border-color: #00eeff;
+    border-color: var(--acc-color1);
 }
 button:disabled {
     opacity: 0.1;
@@ -119,7 +133,7 @@ button:disabled {
 
 .bigBreak {
     flex-basis: 100%;
-    height: 8vh;
+    height: 7vh;
 }
 #score {
     font-size: 1.1em;
@@ -139,10 +153,12 @@ button:disabled {
     margin: 0;
 
     position: relative;
-    background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
+    background: linear-gradient(var(--fg-color), var(--fg-color)) no-repeat
+        center/2px 1.6rem;
 }
 body.singleplayer #score {
-    background: linear-gradient(#fff, #fff) no-repeat right/2px 1.6rem;
+    background: linear-gradient(var(--fg-color), var(--fg-color)) no-repeat
+        right/2px 1.6rem;
 }
 
 #lowerBar.turn1 #p2Score,
@@ -167,10 +183,10 @@ body.singleplayer #score {
     flex-grow: 1;
 }
 #p1Score {
-    background-color: #00eeff;
+    background-color: var(--acc-color1);
 }
 #p2Score {
-    background-color: #fff700;
+    background-color: var(--acc-color2);
 }
 #turnValue,
 #p1ScoreValue,
@@ -189,11 +205,11 @@ body.singleplayer #score {
     }
 }
 #p1ScoreValue {
-    color: #00eeff;
+    color: var(--acc-color1);
     padding-left: 5px;
 }
 #p2ScoreValue {
-    color: #fff700;
+    color: var(--acc-color2);
     padding-right: 5px;
 }
 
@@ -218,11 +234,11 @@ body:not(.singleplayer) #turnLabel {
     --sliderValue: 0.5;
     background: linear-gradient(
                 90deg,
-                #00eeff,
-                #fff700 calc(100% / var(--sliderValue))
+                var(--acc-color1),
+                var(--acc-color2) calc(100% / var(--sliderValue))
             )
             no-repeat,
-        linear-gradient(90deg, #fff, #fff) no-repeat;
+        linear-gradient(90deg, var(--fg-color), var(--fg-color)) no-repeat;
     background-position: 0.8rem, 0.8rem;
     background-size: calc(var(--sliderValue) * (100% - 1.6rem)) 100%,
         calc(100% - 1.6rem) 2px;
@@ -238,8 +254,9 @@ body:not(.singleplayer) #turnLabel {
     width: 1.6rem;
     height: 1.6rem;
     cursor: pointer;
-    background-color: #fff;
-    background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
+    background-color: var(--fg-color);
+    background: linear-gradient(var(--fg-color), var(--fg-color)) no-repeat
+        center/2px 1.6rem;
     border: none;
     border-radius: 0;
     padding: 0;
@@ -252,8 +269,9 @@ body:not(.singleplayer) #turnLabel {
     width: 1.6rem;
     height: 1.6rem;
     cursor: pointer;
-    background-color: #fff;
-    background: linear-gradient(#fff, #fff) no-repeat center/2px 1.6rem;
+    background-color: var(--fg-color);
+    background: linear-gradient(var(--fg-color), var(--fg-color)) no-repeat
+        center/2px 1.6rem;
     border: none;
     border-radius: 0;
     padding: 0;
@@ -279,12 +297,12 @@ body:not(.singleplayer) #turnLabel {
     margin: var(--card-margin);
     background-color: transparent;
     opacity: 0.5;
-    border: 2px solid white;
+    border: 2px solid var(--fg-color);
     border-radius: 5px 0 5px 0;
 
     font-weight: 500;
     font-size: calc(var(--card-size) / 3);
-    color: white;
+    color: var(--fg-color);
 
     cursor: pointer;
 
@@ -296,7 +314,7 @@ body:not(.singleplayer) #turnLabel {
     opacity: 1;
     scale: 1.04;
     font-size: calc(var(--card-size) / 2.5);
-    border-color: #00eeff;
+    border-color: var(--acc-color1);
     /*transition: all 0.1s;*/
 }
 .card:active:not(.found) {
@@ -307,7 +325,7 @@ body:not(.singleplayer) #turnLabel {
     border-style: solid;
     border-width: 2px;
 
-    border-color: #00eeff;
+    border-color: var(--acc-color1);
     opacity: 1;
 
     font-size: calc(var(--card-size) / 3.5);
@@ -315,7 +333,7 @@ body:not(.singleplayer) #turnLabel {
     /*transition: all 0.1s;*/
 }
 .card.uncovered.playing {
-    border-color: #fff700;
+    border-color: var(--acc-color2);
     /*transition: all 0.1s;*/
 }
 .card.uncovered.playing.found,
@@ -329,8 +347,8 @@ body:not(.singleplayer) #turnLabel {
 
     border-color: transparent;
 
-    background: linear-gradient(black, black) padding-box,
-        linear-gradient(90deg, #00eeff, #fff700) border-box;
+    background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
+        linear-gradient(90deg, var(--acc-color1), var(--acc-color2)) border-box;
 
     /*transition: all 0.1s;*/
 }
@@ -365,10 +383,43 @@ body:not(.singleplayer) #turnLabel {
     text-align: center;
     font-size: 1.3em;
 
-    background-color: rgba(0, 2, 16, 0.5);
+    background-color: color-mix(in srgb, var(--bg-color) 50%, transparent);
     z-index: 999;
+    opacity: 1;
+    transition: opacity 0.5s;
 }
 
 #gameFinished.hidden {
-    display: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0s;
+}
+
+#gameTitle {
+    background: linear-gradient(70deg, var(--acc-color1), var(--acc-color2));
+    background-size: 200% 200%;
+    color: transparent;
+    background-clip: text;
+    animation: bgrscroll 20s linear infinite;
+}
+
+@keyframes bgrscroll {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+#colorReroll {
+    width: 4em;
+    height: 2em;
+    background: linear-gradient(70deg, var(--acc-color1), var(--acc-color2));
+    border-radius: 5px 0 0 0;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }

@@ -26,7 +26,7 @@ gainNode.connect(audioContext.destination);
 
 const endTurnButton = document.getElementById("endTurn");
 endTurnButton.onclick = () => {
-    if (cardA != null && cardB != null) endTurn();
+    if ((cardA != null && cardB != null) || allFound()) endTurn();
     //only end when two cards were uncovered
 };
 const lowerBar = document.getElementById("lowerBar");
@@ -554,6 +554,28 @@ const closestIntegerRatio = (r, n) => {
 };
 
 const randInt = (n) => Math.floor(Math.random() * n);
+
+//
+//
+// ---------------------
+//  colors
+// ---------------------
+//
+//
+
+const HSL = (h, s, l) => {
+    return `hsl(${h}, ${s}%, ${l}%)`;
+};
+
+const rerollColors = () => {
+    let h = randInt(360);
+    document.documentElement.style.setProperty("--acc-color1", HSL(h, 50, 60));
+    document.documentElement.style.setProperty(
+        "--acc-color2",
+        HSL((h + 120) % 360, 50, 60)
+    );
+};
+document.getElementById("colorReroll").onclick = rerollColors;
 
 //
 //
