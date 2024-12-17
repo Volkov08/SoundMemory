@@ -47,7 +47,7 @@ body {
     text-align: center;
 
     row-gap: 5px;
-    column-gap: 40px;
+    column-gap: 25px;
 }
 
 #settings p {
@@ -60,6 +60,9 @@ body {
 
 #settings.hidden {
     display: none;
+}
+#setPairsValue {
+    width: 2em;
 }
 
 p {
@@ -113,6 +116,9 @@ button:disabled {
     width: auto;
     height: auto;
     margin: 0;
+
+    opacity: 1;
+    transition: opacity 0.5s;
 }
 #lowerBar button {
     width: auto;
@@ -217,6 +223,10 @@ body.singleplayer #score {
     margin-left: -10px;
     width: 6px;
 }
+#lowerBar.hidden {
+    opacity: 0;
+}
+
 body.singleplayer #p1ScoreLabel,
 body.singleplayer #p2ScoreValue,
 body.singleplayer #p2ScoreLabel {

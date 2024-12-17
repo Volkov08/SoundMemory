@@ -192,8 +192,13 @@ function filesLoaded() {
     console.log("files loaded");
 
     gameSettings.cards = Math.min(gameSettings.cards, fileNames.length * 2);
-    setPairsSlider.max = fileNames.length;
-    setPairsSlider.oninput();
+
+    alignCards();
+    for (let i = 0; i < gameSettings.cards; i++) {
+        let card = createCard(i);
+        cards.push(card);
+        cardsArea.appendChild(card);
+    }
 }
 
 function startGame() {
@@ -209,7 +214,7 @@ function startGame() {
     openSettingsButton.disabled = false;
     closeSettingsButton.disabled = false;
     closeSettingsButton.style.display = "block";
-    lowerBar.style.display = "flex";
+    lowerBar.classList.remove("hidden");
 
     alignCards();
     //shuffle fileNames (Fisher-Yates)
@@ -530,7 +535,6 @@ function alignCards() {
     let size = Math.floor(
         Math.min(availWidth / x, availHeight / y) - 2 * margin
     );
-    console.log(ratio, availWidth / x, availHeight / y, margin);
 
     console.log(`aligning cards to ${x}x${y} grid, size: ${size}`);
 
@@ -540,6 +544,7 @@ function alignCards() {
 }
 
 const closestIntegerRatio = (r, n) => {
+    if (r == 0) return { x: 1, y: 1 };
     let a = 1;
     let b = r;
     let flip = false;
@@ -550,7 +555,6 @@ const closestIntegerRatio = (r, n) => {
     while (a * b < n) {
         a++;
         b = Math.floor(a * r);
-        console.log(a, b);
     }
     if (flip) return { x: b, y: a };
     return { x: a, y: b };
@@ -571,12 +575,18 @@ const HSL = (h, s, l) => {
 };
 
 const rerollColors = () => {
-    let h = randInt(360);
-    document.documentElement.style.setProperty("--acc-color1", HSL(h, 50, 60));
+    let h1 = randInt(360);
+    let h2 = (h1 + 120 * (randInt(2) + 1)) % 360;
+    document.documentElement.style.setProperty(
+        "--acc-color1",
+        HSL(h1, 100, 50)
+    );
     document.documentElement.style.setProperty(
         "--acc-color2",
-        HSL((h + 120) % 360, 50, 60)
+        HSL(h2, 100, 50)
     );
+
+    console.log("new hues:", h1, h2);
 };
 document.getElementById("colorReroll").onclick = rerollColors;
 
