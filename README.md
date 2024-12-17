@@ -6,7 +6,8 @@ A game of Memory, but with sound clips!
 
 ![Image](./screenshots/mpgame.png)
 
-Alternate turns uncovering 2 cards and try to remember their content. Find a pair and get a point, and a chance to uncover 2 more. Matched Pairs will also show their corresponding number once found.
+Each card plays a sound when you click it, 2 cards for each unique sound.
+Alternate turns uncovering 2 cards and try to remember their content. Find a pair of matching sounds and get a point, and a chance to uncover 2 more. Matched Pairs will also show their corresponding number once found.
 
 ![Image](./screenshots/spgame.png)
 
