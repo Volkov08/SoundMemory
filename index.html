@@ -8,13 +8,13 @@
     </head>
     <body>
         <div id="gameArea">
-            <div id ="gameFinished">
+            <div id ="gameFinished" class="hidden">
                 <h1>Game Finished!</h1>
-                <p>thanks for playing</p>
+                <p>thanks for playing!</p>
             </div>
-            </div id="cardsArea">
+            <div id="cardsArea"></div>
         </div>
-        <div id="lowerBar" class="turn1">
+        <div id="lowerBar" class="turn1" style="display: none;">
             <p id="p1ScoreLabel">Player 1</p>
             <p id="p1ScoreValue">0</p>
             <div id="score">
@@ -44,13 +44,15 @@
         </div>
 
         <div id="settings">
+            <h1>Sound Memory Game by Volkov</h1>
+            <div class="break"></div>
             <h1>Start New Game</h1>
             <div class="break"></div>
 
             <button id="setSingleplayer">Singleplayer</button>
             <div class="break"></div>
 
-            <p>Sound Clip Duration</p>
+            <p>Clip Duration</p>
             <button id="setSoundDuration"></button>
             <div class="break"></div>
 

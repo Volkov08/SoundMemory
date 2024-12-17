@@ -17,6 +17,7 @@ async function loadFileNames() {
     }
 }
 
+const cardsArea = document.getElementById("cardsArea");
 const gameArea = document.getElementById("gameArea");
 const audioContext = new AudioContext();
 audioContext.suspend();
@@ -182,7 +183,9 @@ resetVars = () => {
 
     document.body.classList.toggle("singleplayer", gameSettings.players == 1);
 
-    gameArea.innerHTML = "";
+    cardsArea.innerHTML = "";
+
+    gameFinishedScreen.classList.add("hidden");
 };
 
 function filesLoaded() {
@@ -206,6 +209,7 @@ function startGame() {
     openSettingsButton.disabled = false;
     closeSettingsButton.disabled = false;
     closeSettingsButton.style.display = "block";
+    lowerBar.style.display = "flex";
 
     alignCards();
     //shuffle fileNames (Fisher-Yates)
@@ -229,7 +233,7 @@ function startGame() {
         let card = createCard(i);
 
         cards.push(card);
-        gameArea.appendChild(card);
+        cardsArea.appendChild(card);
 
         audioLookup.push(i % (gameSettings.cards / 2));
     }
@@ -374,7 +378,7 @@ function finishGame() {
     lowerBar.classList.remove("turn1");
     lowerBar.classList.remove("turn2");
 
-    alert(1);
+    gameFinishedScreen.classList.remove("hidden");
 }
 
 //
@@ -505,11 +509,11 @@ function stopFade(j) {
 //
 
 function alignCards() {
-    let compStyle = getComputedStyle(gameArea);
+    let compStyle = getComputedStyle(cardsArea);
 
     let gAHeight =
-        compStyle.getPropertyValue("--max-height") * window.innerHeight;
-    console.log(gAHeight);
+        getComputedStyle(gameArea).getPropertyValue("--max-height") *
+        window.innerHeight;
     let gAWidth = gameArea.clientWidth;
 
     paddig = parseInt(compStyle.padding);
@@ -523,12 +527,13 @@ function alignCards() {
     let size = Math.floor(
         Math.min(availWidth / x, availHeight / y) - 2 * margin
     );
+    console.log(ratio, availWidth / x, availHeight / y, margin);
 
     console.log(`aligning cards to ${x}x${y} grid, size: ${size}`);
 
-    if (y > x) gameArea.style.justifyContent = "center";
-    else gameArea.style.justifyContent = "left";
-    gameArea.style.setProperty("--card-size", `${size}px`);
+    if (y > x) cardsArea.style.justifyContent = "center";
+    else cardsArea.style.justifyContent = "left";
+    cardsArea.style.setProperty("--card-size", `${size}px`);
 }
 
 const closestIntegerRatio = (r, n) => {
@@ -542,6 +547,7 @@ const closestIntegerRatio = (r, n) => {
     while (a * b < n) {
         a++;
         b = Math.floor(a * r);
+        console.log(a, b);
     }
     if (flip) return { x: b, y: a };
     return { x: a, y: b };
