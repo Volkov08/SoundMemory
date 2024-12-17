@@ -248,12 +248,14 @@ function startGame() {
 
     endTurnButton.disabled = true;
     blockInput = false;
+    /* Debug Hints
     cards.forEach((card, i) => {
         card.innerText =
             "abcdefghijklmnopqrstuvwxyz+-.*#/&ß%йцукенгшщзхфывапролджэячсмитьбю"[
                 audioLookup[i]
             ];
     });
+    */
 }
 
 function createCard(i) {
