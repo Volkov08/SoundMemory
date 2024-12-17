@@ -7,7 +7,7 @@ outputDir = "sounds"
 
 rawFiles = os.listdir(inputDir)
 segmentDuration = 5000
-sweepDuration = 1000
+sweepDuration = 800
 
 def clearDir(dir):
     for file in os.listdir(dir):

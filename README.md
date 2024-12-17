@@ -36,4 +36,4 @@ The number of sound clips that you play with, may be between 4 and 32. The numbe
 
 ## Audio
 
-All ~100 songs/sound effects used are sourced from the free [Youtube Audio Library](https://www.youtube.com/audiolibrary). The original files are not included in the repository, but the files processed by `process.py` and used in-game can be found in the `sounds/` directory. These files are automatically cut to 5s and made to contain the loudest part of the audio, aswell as faded in & out.
+All ~100 songs/sound effects used are sourced from the free [Youtube Audio Library](https://www.youtube.com/audiolibrary). The original files are not included in the repository, but the files processed by `process.py` and used in-game can be found in the `sounds/` directory. These files are automatically cut to 5s, made to contain the loudest part of the audio, normalized and faded in & out.

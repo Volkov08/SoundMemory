@@ -14,6 +14,7 @@ async function loadFileNames() {
         filesLoaded();
     } catch (error) {
         console.error(error);
+        alert("something went wrong loading sound file index, sorry!");
     }
 }
 
