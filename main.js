@@ -284,6 +284,7 @@ function createCard(i) {
 function endTurn() {
     pauseAll();
     endTurnOnStop = false;
+    cardsArea.classList.remove("turnEnd");
 
     cards.forEach((card, i) => {
         card.classList.remove("uncovered");
@@ -438,6 +439,7 @@ function uncoverCard(i) {
         if (audioLookup[cardA] == audioLookup[cardB]) matchFound();
         else {
             endTurnButton.disabled = false;
+            cardsArea.classList.add("turnEnd");
             if (
                 gameSettings.maxPlays &&
                 Math.min(playedInTurn[cardA], playedInTurn[cardB]) ==

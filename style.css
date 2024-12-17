@@ -320,14 +320,18 @@ body:not(.singleplayer) #turnLabel {
 
     /*transition: all 0.3s;*/
 }
-.card:hover:not(.found) {
+.card:hover.uncovered,
+#cardsArea:not(.turnEnd) .card:hover:not(.found) {
     opacity: 1;
     scale: 1.04;
-    font-size: calc(var(--card-size) / 2.5);
     border-color: var(--acc-color1);
     /*transition: all 0.1s;*/
 }
-.card:active:not(.found) {
+#cardsArea:not(.turnEnd) .card:hover:not(.uncovered):not(.found) {
+    font-size: calc(var(--card-size) / 2.5);
+}
+.card:active.uncovered,
+#cardsArea:not(.turnEnd) .card:active:not(.found) {
     scale: 1.08;
     /*transition: all 0.1s;*/
 }
